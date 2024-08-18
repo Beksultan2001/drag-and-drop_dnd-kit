@@ -63,9 +63,9 @@ html {
 body {
   margin: auto;
   padding: 0;
-  background-color: $color-background;
-  background-image: radial-gradient($color-background-pattern 20%, transparent 0),
-    radial-gradient($color-background-pattern 20%, transparent 0);
+  // background-color: $color-background;
+  // background-image: radial-gradient($color-background-pattern 20%, transparent 0),
+  //   radial-gradient($color-background-pattern 20%, transparent 0);
   background-size: 1.25rem 1.25rem;
   background-position: 0 0, 0.0625rem 0.0625rem;
 }
@@ -146,14 +146,11 @@ body {
 }
 
 .droppable-container {
-  background: $color-droppable-container-background;
+  border: 1px solid;
   border-radius: 0.5rem;
 
   &__sortable-wrapper {
     padding: 1rem 1.5rem 1rem 1rem;
-    // display: grid;
-    // row-gap: 1rem;
-    // grid-template-columns: 100%;
     display: flex;
     flex-direction: row;
     gap: 1rem;

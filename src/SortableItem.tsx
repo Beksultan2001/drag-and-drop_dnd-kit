@@ -1,27 +1,27 @@
-import { useEffect, type FC } from 'react';
+import type { FC } from 'react';
 import type { UniqueIdentifier } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import classnames from 'classnames';
 
-
 export const Item: FC<{
-  item: { id: UniqueIdentifier };  // Updated to accept item object
+  id: UniqueIdentifier;
   isDragging?: boolean;
   isOverlay?: boolean;
-}> = ({ item, isDragging = false, isOverlay = false }) => {
+}> = ({ id, isDragging = false, isOverlay = false }) => {
   return (
     <div
       className={classnames('sortable-item', {
         'sortable-item--is-overlay': isOverlay,
-        'sortable-item--is-dragging': isDragging,
+        'sortable-item--is-dragging': isDragging, // Apply dragging styling if isDragging prop is true
       })}
     >
-      {item.id}  {/* Display item id */}
+      {id}
     </div>
   );
 };
-const SortableItem: FC<{ item: { id: UniqueIdentifier } }> = ({ item }) => {
+
+const SortableItem: FC<{ id: UniqueIdentifier }> = ({ id }) => {
   const {
     attributes,
     listeners,
@@ -29,21 +29,17 @@ const SortableItem: FC<{ item: { id: UniqueIdentifier } }> = ({ item }) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: item.id });
+  } = useSortable({ id: id });
 
   const style = {
+    // Use Translate instead of Transform if overlay is disabled
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
-  useEffect(() => {
-    // Debugging purpose
-    // console.log(transform, 'transform', CSS.Transform.toString(transform))
-  }, [transform]);
-
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <Item item={item} isDragging={isDragging} />
+      <Item id={id} isDragging={isDragging} />
     </div>
   );
 };

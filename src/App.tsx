@@ -23,13 +23,11 @@ import {
   getFirstCollision,
 } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-// import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 
 import Container from './Container';
 import { Item } from './SortableItem';
 
 const App = () => {
-  // Maintain state for each container and the items they contain
   const [items, setItems] = useState<Record<string, UniqueIdentifier[]>>({
     container1: [1, 2, 3],
     container2: [4, 5, 6],
@@ -37,13 +35,9 @@ const App = () => {
     container4: [10],
   });
 
-  // Maintain state for the layout style - horizontal or vertical
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
 
-  // Toggle function to change the layout style between horizontal and vertical
-
-  // Use the defined sensors for drag and drop operation
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -64,54 +58,36 @@ const App = () => {
     }),
   );
 
-  // State to keep track of currently active (being dragged) item
+  // activeId - used for displaying DragOverlay
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-
-  // Ref to store the ID of the last container that was hovered over during a drag
   const lastOverId = useRef<UniqueIdentifier | null>(null);
-
-  // Ref to track if an item was just moved to a new container
   const recentlyMovedToNewContainer = useRef(false);
 
-  // Function to find which container an item belongs to
-  const findContainer = useCallback(
-    (id: UniqueIdentifier) => {
-      // if the id is a container id itself
-      if (id in items) return id;
+  const findContainer = (id: UniqueIdentifier) => {
+    if (id in items) {
+      return id;
+    }
 
-      // find the container by looking into each of them
-      return Object.keys(items).find((key) => items[key].includes(id));
-    },
-    [items],
-  );
+    return Object.keys(items).find((key) => items[key].includes(id));
+  };
 
-  // Ref to store the state of items before a drag operation begins
   const itemsBeforeDrag = useRef<null | Record<string, UniqueIdentifier[]>>(
     null,
   );
 
-  // Function called when a drag operation begins
   const handleDragStart = useCallback(
-    // ({ active }: DragStartEvent) => {
-    //   itemsBeforeDrag.current = {
-    //     container1: [...items.container1],
-    //     container2: [...items.container2],
-    //     container3: [...items.container3],
-    //     container4: [...items.container4],
-    //   };
-    //   setActiveId(active.id);
-    // },
-    // [items],
     ({ active }: DragStartEvent) => {
-      // Store the current state of items
-      itemsBeforeDrag.current = { ...items };
-      // Set the active (dragged) item id
+      itemsBeforeDrag.current = {
+        container1: [...items.container1],
+        container2: [...items.container2],
+        container3: [...items.container3],
+        container4: [...items.container4],
+      };
       setActiveId(active.id);
     },
     [items],
   );
 
-  // Function called when an item is dragged over another container
   const handleDragOver = useCallback(
     ({ active, over }: DragOverEvent) => {
       if (!over || active.id in items) {
@@ -120,7 +96,7 @@ const App = () => {
 
       const { id: activeId } = active;
       const { id: overId } = over;
-      console.log(activeId,overId, 'overId')
+
       const activeContainer = findContainer(activeId);
       const overContainer = findContainer(overId);
 
@@ -176,7 +152,6 @@ const App = () => {
     [items, findContainer],
   );
 
-  // Function called when a drag operation ends
   const handleDragEnd = useCallback(
     ({ active, over }: DragEndEvent) => {
       const activeContainer = findContainer(active.id);
@@ -213,7 +188,7 @@ const App = () => {
     [items, findContainer],
   );
 
-  // Function called when a drag operation is cancelled
+  // When pressing ESC key
   const onDragCancel = useCallback(() => {
     console.log(itemsBeforeDrag.current);
     setItems({
@@ -245,7 +220,6 @@ const App = () => {
 
       // Start by finding any intersecting droppable
       const pointerIntersections = pointerWithin(args);
-      console.log(pointerIntersections, 'pointerIntersections');
       const intersections =
         pointerIntersections.length > 0
           ? // If there are droppables intersecting with the pointer, return those
@@ -290,20 +264,17 @@ const App = () => {
     [activeId, items],
   );
 
-  // useEffect hook called after a drag operation, to clear the "just moved" status
   useEffect(() => {
     requestAnimationFrame(() => {
       recentlyMovedToNewContainer.current = false;
     });
   }, [items]);
 
-  // Render the app, including the DnD context and all containers and items
   return (
     <>
       <div
         className={classnames('wrapper', {
-          'wrapper--vertical': layout === 'vertical',
-          'wrapper--horizontal': layout !== 'vertical',
+          'wrapper--horizontal': true,
         })}
       >
         <DndContext
@@ -326,22 +297,15 @@ const App = () => {
           // solve infinite scroll on non-body container (e.g. overflow-x on a child div)
           // modifiers={[restrictToWindowEdges]}
         >
-          {/* <Container id="container1" items={items.container1} />
+          <Container id="container1" items={items.container1} />
           <Container id="container2" items={items.container2} />
           <Container id="container3" items={items.container3} />
-          <Container id="container4" items={items.container4} /> */}
-          {Object.entries(items).map(([containerId, containerItems]) => (
-            <Container
-              key={containerId}
-              id={containerId}
-              items={containerItems}
-            />
-          ))}
+          <Container id="container4" items={items.container4} />
 
           {/* Use CSS.Translate.toString(transform) in `Item` style if overlay is disabled */}
-          {/* <DragOverlay>
+          <DragOverlay>
             {activeId ? <Item id={String(activeId)} isOverlay /> : null}
-          </DragOverlay> */}
+          </DragOverlay>
         </DndContext>
       </div>
     </>
