@@ -3,5 +3,8 @@ import type {
   } from '@dnd-kit/core';
 
 export interface ItemType {
-    id: UniqueIdentifier
+    id: UniqueIdentifier,
+    data: {
+        isSpace: number
+    }
 }

@@ -63,21 +63,6 @@ html {
 body {
   margin: auto;
   padding: 0;
-  // background-color: $color-background;
-  // background-image: radial-gradient($color-background-pattern 20%, transparent 0),
-  //   radial-gradient($color-background-pattern 20%, transparent 0);
-  background-size: 1.25rem 1.25rem;
-  background-position: 0 0, 0.0625rem 0.0625rem;
-}
-
-#root {
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-
-.header {
-  position: sticky;
-  left: 0;
 }
 
 .title {
@@ -90,6 +75,10 @@ body {
     oblique-text-shadow($title-stroke-width, $title-stroke-width, $color-title-stroke);
   color: $color-title-text;
   margin: 2rem 0;
+}
+
+#root {
+  width: 100%;
 }
 
 .actions-bar {
@@ -123,11 +112,12 @@ body {
 .wrapper {
   display: flex;
   flex-direction: column;
+  // width: 100%;
   gap: 2rem;
   padding: 2rem;
 
   &--horizontal {
-    min-width: 83rem;
+    // min-width: 83rem;
 
     .droppable-container {
       flex: 1;

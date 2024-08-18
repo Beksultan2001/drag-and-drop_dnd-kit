@@ -1,14 +1,15 @@
 import type { FC } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import type { UniqueIdentifier } from '@dnd-kit/core';
+// import type { UniqueIdentifier } from '@dnd-kit/core';
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
 import SortableItem from './SortableItem';
+import { ItemType } from './ItemType';
 
-const Container: FC<{ items: UniqueIdentifier[]; id: string }> = ({
+const Container: FC<{ items: ItemType[]; id: string }> = ({
   items,
   id,
 }) => {
@@ -25,8 +26,8 @@ const Container: FC<{ items: UniqueIdentifier[]; id: string }> = ({
         id={id} // Optional, if not provided, dnd-kit will auto assign
       >
         <div className="droppable-container__sortable-wrapper" ref={setNodeRef}>
-          {items.map((id: UniqueIdentifier) => (
-            <SortableItem key={id} id={id} />
+          {items.map((item: ItemType) => (
+            <SortableItem key={id} id={item.id} data={item.data} />
           ))}
         </div>
       </SortableContext>

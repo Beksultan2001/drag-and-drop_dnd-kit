@@ -26,18 +26,18 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 import Container from './Container';
 import { Item } from './SortableItem';
+import { ItemType } from './ItemType';
 
 const App = () => {
-  const [items, setItems] = useState<Record<string, UniqueIdentifier[]>>({
-    container1: [1, 2, 3],
-    container2: [4, 5, 6],
-    container3: [7, 8, 9],
-    container4: [10],
+
+  const [items, setItems] = useState<Record<string, ItemType[]>>({
+    container1: [{id: 1, data: {isSpace: 1}}, {id: 2, data: {isSpace: 0}}, {id: 3, data: {isSpace: 1}}],
+    container2: [{id: 4, data: {isSpace: 0}}, {id: 5, data: {isSpace: 1}}, {id: 6, data: {isSpace: 1}}],
+    container3: [{id: 7, data: {isSpace: 1}}, {id: 8, data: {isSpace: 0}}, {id: 9, data: {isSpace: 1}}],
+    container4: [{id: 10, data: {isSpace: 0}},{id: 11,data: {isSpace: 1}}, {id: 12, data: {isSpace: 1}}],
   });
 
-
-  const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
-
+  
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -68,10 +68,10 @@ const App = () => {
       return id;
     }
 
-    return Object.keys(items).find((key) => items[key].includes(id));
+    return Object.keys(items).find((key) => items[key].some((t) => t.id === id));
   };
 
-  const itemsBeforeDrag = useRef<null | Record<string, UniqueIdentifier[]>>(
+  const itemsBeforeDrag = useRef<null | Record<string, ItemType[]>>(
     null,
   );
 
@@ -108,8 +108,8 @@ const App = () => {
         setItems((items) => {
           const activeItems = items[activeContainer];
           const overItems = items[overContainer];
-          const overIndex = overItems.indexOf(overId);
-          const activeIndex = activeItems.indexOf(activeId);
+          const overIndex = overItems.findIndex((item) => item.id === overId);
+          const activeIndex = activeItems.findIndex((item) => item.id === activeId);
 
           let newIndex: number;
 
@@ -135,7 +135,7 @@ const App = () => {
           return {
             ...items,
             [activeContainer]: items[activeContainer].filter(
-              (item) => item !== active.id,
+              (item) => item.id !== active.id,
             ),
             [overContainer]: [
               ...items[overContainer].slice(0, newIndex),
@@ -170,8 +170,8 @@ const App = () => {
         return;
       }
 
-      const activeIndex = items[activeContainer].indexOf(activeId);
-      const overIndex = items[overContainer].indexOf(overId);
+      const activeIndex = items[activeContainer].findIndex((item) => item.id === activeId);
+      const overIndex = items[overContainer].findIndex((item) => item.id === overId);
 
       if (activeIndex !== overIndex) {
         setItems((items) => ({
@@ -190,7 +190,6 @@ const App = () => {
 
   // When pressing ESC key
   const onDragCancel = useCallback(() => {
-    console.log(itemsBeforeDrag.current);
     setItems({
       container1: [...(itemsBeforeDrag.current?.container1 ?? [])],
       container2: [...(itemsBeforeDrag.current?.container2 ?? [])],
@@ -239,7 +238,8 @@ const App = () => {
               droppableContainers: args.droppableContainers.filter(
                 (container) =>
                   container.id !== overId &&
-                  containerItems.includes(container.id),
+                  // containerItems.includes(container.id),
+                  containerItems.some((t) => t.id === container.id)
               ),
             })[0]?.id;
           }
@@ -303,9 +303,9 @@ const App = () => {
           <Container id="container4" items={items.container4} />
 
           {/* Use CSS.Translate.toString(transform) in `Item` style if overlay is disabled */}
-          <DragOverlay>
+          {/* <DragOverlay>
             {activeId ? <Item id={String(activeId)} isOverlay /> : null}
-          </DragOverlay>
+          </DragOverlay> */}
         </DndContext>
       </div>
     </>
