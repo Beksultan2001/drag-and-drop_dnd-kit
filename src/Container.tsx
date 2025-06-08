@@ -27,7 +27,7 @@ const Container: FC<{ items: ItemType[]; id: string }> = ({
       >
         <div className="droppable-container__sortable-wrapper" ref={setNodeRef}>
           {items.map((item: ItemType) => (
-            <SortableItem key={id} id={item.id} data={item.data} />
+            <SortableItem key={item.id} id={item.id} data={item.data} />
           ))}
         </div>
       </SortableContext>
